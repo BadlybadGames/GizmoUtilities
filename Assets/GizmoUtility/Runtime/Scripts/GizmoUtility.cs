@@ -122,17 +122,17 @@ namespace Utility
             AddJob(job);
         }
 
-        public static void Arrow(Vector3 startPosition, Vector3 direction, float length, float width=4.5f, Color? color = null, float duration = -1, GameObject mustBeSelected = null)
+        public static void Arrow(Vector3 startPosition, Vector3 direction, float length, float width=4.5f, Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endcolor = default)
         {
             direction.Normalize();
             Vector2 directionIn2d = (Vector2)direction;
             Vector3 endPosition = startPosition + direction * length;
 
-            Line(startPosition, endPosition, width: width, color: color == null ? Color.green : color);
+            Line(startPosition, endPosition, width: width, color: color, animatedColor:animatedColor, endColor: endcolor, duration:duration, mustBeSelected: mustBeSelected);
             directionIn2d = directionIn2d.Rotate(135);
-            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: Color.green);
+            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: color, animatedColor:animatedColor, endColor:endcolor, duration:duration, mustBeSelected: mustBeSelected);
             directionIn2d = directionIn2d.Rotate(90);
-            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: Color.green);
+            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: color, animatedColor: animatedColor, endColor:endcolor, duration:duration, mustBeSelected: mustBeSelected);
 
         }
 
@@ -197,7 +197,6 @@ namespace Utility
 
                 job.DoneOnce = true;
                 
-                // Keep track of original Handles color
                 Handles.color = job.color;
 
                 if (job.AnimatedColor)
@@ -242,6 +241,7 @@ namespace Utility
 
                         Handles.SphereHandleCap(0, position, Quaternion.identity, radius, EventType.Ignore);
                         break;
+                    
                 }
             }
             Handles.color = initialColor;
