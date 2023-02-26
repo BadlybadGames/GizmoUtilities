@@ -1,10 +1,12 @@
 {
-    "name": "BBG.GizmoUtility",
-    "rootNamespace": "BBG.GizmoUtility",
+    "name": "BBG.GizmoUtility.Editor",
+    "rootNamespace": "BBG.GizmoUtility.Editor",
     "references": [
         "GUID:71f4243a81a50cc4b9495c6192eaa85c"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

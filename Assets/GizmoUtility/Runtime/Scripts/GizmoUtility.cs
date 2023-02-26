@@ -10,7 +10,6 @@ using UnityEditor;
 
 namespace Utility
 {
-    
     // Should only have a single instance!!
     /// <summary>
     /// Utilities for drawing gizmo-likes in a static manner
@@ -18,6 +17,17 @@ namespace Utility
     public class GizmoUtility : MonoBehaviour
     {
         private float previousUpdateTime = -1f;
+
+        private void OnEnable()
+        {
+            SceneView.duringSceneGui += this._OnSceneView;
+        }
+
+        private void OnDisable()
+        {
+            SceneView.duringSceneGui -= this._OnSceneView;
+        }
+
         private class Job
         {
             public float duration = -1;
@@ -31,6 +41,7 @@ namespace Utility
 
             // The gizmo will only be rendered if this gameobject is selected. Basically replicating OnGizmosSelected
             public GameObject MustBeSelected;
+
 
             public override bool Equals(object obj)
             {
@@ -57,9 +68,12 @@ namespace Utility
             Circle,
             Sphere,
         }
+
         public static Color color { private get; set; }
 
-        public static void Circle(Vector3 position, float radius, Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
+
+        public static void Circle(Vector3 position, float radius, Color? color = null, float duration = -1,
+            GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
         {
             Job job = new Job();
 
@@ -77,8 +91,9 @@ namespace Utility
 
             AddJob(job);
         }
-        
-        public static void Sphere(Vector3 position, float radius, Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
+
+        public static void Sphere(Vector3 position, float radius, Color? color = null, float duration = -1,
+            GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
         {
             Job job = new Job();
 
@@ -96,6 +111,7 @@ namespace Utility
 
             AddJob(job);
         }
+
         /// <summary>
         /// Render a label using Handles.label if in editor.
         /// </summary>
@@ -103,7 +119,8 @@ namespace Utility
         /// <param name="text">Text to draw</param>
         /// <param name="color">Color of text</param>
         /// <param name="duration">Duration to display text</param>
-        public static void Label(Vector3 position, string text, Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
+        public static void Label(Vector3 position, string text, Color? color = null, float duration = -1,
+            GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
         {
             Job job = new Job();
 
@@ -122,25 +139,37 @@ namespace Utility
             AddJob(job);
         }
 
-        public static void Arrow(Vector3 startPosition, Vector3 direction, float length, float width=4.5f, Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endcolor = default)
+        public static void ArrowTo(Vector3 startPosition, Vector3 endPosition, float width = 4.5f,
+            Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false,
+            Color endcolor = default)
+        {
+            var diff = endPosition - startPosition;
+            Arrow(startPosition, diff.normalized, diff.magnitude, width, color, duration, mustBeSelected, animatedColor, endcolor);
+        }
+        public static void Arrow(Vector3 startPosition, Vector3 direction, float length, float width = 4.5f,
+            Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false,
+            Color endcolor = default)
         {
             direction.Normalize();
             Vector2 directionIn2d = (Vector2)direction;
             Vector3 endPosition = startPosition + direction * length;
 
-            Line(startPosition, endPosition, width: width, color: color, animatedColor:animatedColor, endColor: endcolor, duration:duration, mustBeSelected: mustBeSelected);
+            Line(startPosition, endPosition, width: width, color: color, animatedColor: animatedColor,
+                endColor: endcolor, duration: duration, mustBeSelected: mustBeSelected);
             directionIn2d = directionIn2d.Rotate(135);
-            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: color, animatedColor:animatedColor, endColor:endcolor, duration:duration, mustBeSelected: mustBeSelected);
+            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width * 1.5f, color: color,
+                animatedColor: animatedColor, endColor: endcolor, duration: duration, mustBeSelected: mustBeSelected);
             directionIn2d = directionIn2d.Rotate(90);
-            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width*1.5f, color: color, animatedColor: animatedColor, endColor:endcolor, duration:duration, mustBeSelected: mustBeSelected);
-
+            Line(endPosition, endPosition + (Vector3)directionIn2d * 0.25f, width: width * 1.5f, color: color,
+                animatedColor: animatedColor, endColor: endcolor, duration: duration, mustBeSelected: mustBeSelected);
         }
 
-        public static void Line(Vector3 startPosition, Vector3 endPosition, float width=3.5f,  Color? color = null, float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
+        public static void Line(Vector3 startPosition, Vector3 endPosition, float width = 3.5f, Color? color = null,
+            float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
         {
             Job job = new Job();
 
-            job.arguments = new object[] { startPosition, endPosition, width};
+            job.arguments = new object[] { startPosition, endPosition, width };
             job.duration = duration;
             job.durationLeft = duration;
             job.typeOfJob = JobType.Line;
@@ -159,11 +188,12 @@ namespace Utility
         {
             jobs.Add(job);
         }
+
         private static List<Job> jobs = new List<Job>();
 
         private void Update()
         {
-            foreach(var job in jobs.ToArray())
+            foreach (var job in jobs.ToArray())
             {
                 if (!job.DoneOnce)
                     continue;
@@ -176,6 +206,47 @@ namespace Utility
             }
         }
 
+        private bool isSceneViewJob(Job job)
+        {
+            return new JobType[] { JobType.Sphere }.Contains(job.typeOfJob);
+        }
+        
+        public void _OnSceneView(SceneView view)
+        {
+            if (Event.current.type != EventType.Repaint)
+            {
+                return;
+            }
+            
+            Color initialColor = Handles.color;
+            foreach (var job in jobs.ToArray())
+            {
+                if (CheckJobIfSelected(job)) continue;
+                Handles.color = job.color;
+                
+                job.DoneOnce = true;
+
+                switch (job.typeOfJob)
+                {
+                    case JobType.Sphere:
+                        var position = (Vector3)job.arguments[0];
+                        var radius = (float)job.arguments[1];
+                        
+                        Handles.SphereHandleCap(
+                            0,
+                            position,
+                            transform.rotation * Quaternion.LookRotation(Vector3.right),
+                            radius * 2,
+                            EventType.Repaint
+                        );
+                        break;
+                }
+            }
+
+            Handles.color = initialColor;
+        }
+
+
         void OnDrawGizmos()
         {
 #if UNITY_EDITOR
@@ -183,20 +254,19 @@ namespace Utility
             {
                 return;
             }
+
             Color initialColor = Handles.color;
-            foreach(Job job in jobs.ToArray())
+            foreach (Job job in jobs.ToArray())
             {
-                // If the job is supposed to only be done while the gameobject is rendered, check for selection here.
-                if (job.MustBeSelected != null)
+                if (isSceneViewJob(job))
                 {
-                    if (!Selection.gameObjects.Contains(job.MustBeSelected))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
 
+                if (CheckJobIfSelected(job)) continue;
+
                 job.DoneOnce = true;
-                
+
                 Handles.color = job.color;
 
                 if (job.AnimatedColor)
@@ -235,17 +305,25 @@ namespace Utility
 
                         Handles.DrawSolidDisc(position, Vector3.forward, radius);
                         break;
-                    case JobType.Sphere:
-                        position = (Vector3)job.arguments[0];
-                        radius = (float)job.arguments[1];
-
-                        Handles.SphereHandleCap(0, position, Quaternion.identity, radius, EventType.Ignore);
-                        break;
-                    
                 }
             }
+
             Handles.color = initialColor;
-#endif      
+#endif
+        }
+
+        private static bool CheckJobIfSelected(Job job)
+        {
+            // If the job is supposed to only be done while the gameobject is rendered, check for selection here.
+            if (job.MustBeSelected != null)
+            {
+                if (!Selection.gameObjects.Contains(job.MustBeSelected))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -1,9 +1,7 @@
 {
-    "name": "BBG.GizmoUtility",
-    "rootNamespace": "BBG.GizmoUtility",
-    "references": [
-        "GUID:71f4243a81a50cc4b9495c6192eaa85c"
-    ],
+    "name": "BBG.GizmoUtility.Common",
+    "rootNamespace": "BBG.GizmoUtility.Common",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
