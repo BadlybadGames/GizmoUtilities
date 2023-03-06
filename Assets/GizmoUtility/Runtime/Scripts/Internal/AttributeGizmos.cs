@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
+using BBG.GizmoUtility.GizmoUtility.Runtime.Scripts.FieldImplementations;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -16,8 +18,20 @@ namespace BBG.Physics.Internal
         public float r=1, g=1, b=1, a=1;
     }
     
+    [ExecuteAlways]
     public class AttributeGizmos : MonoBehaviour
     {
+
+        private Dictionary<Type, BaseFieldImplementation> _implementations =
+            new Dictionary<Type, BaseFieldImplementation>()
+            {
+                { typeof(float), new FloatFieldImplementation() },
+                { typeof(Vector3), new Vector3FieldImplementation() },
+                { typeof(Vector3[]), new Vector3ArrayFieldImplementation() },
+                { typeof(Transform), new TransformFieldImplementation() },
+            };
+        
+        
         private void Update()
         {
             for (int i = 0; i < SceneManager.sceneCount; i++)
@@ -50,35 +64,17 @@ namespace BBG.Physics.Internal
                                 float width = attr.size < 0 ? 4.5f : attr.size;
                                 if (attr.mustBeSelected)
                                 {
+                                    #if UNITY_EDITOR
                                     if (!Selection.Contains(go))
                                     {
                                         continue;
                                     }
+                                    #endif
                                 }
 
-                                object t = field.FieldType;
-
-                                if (field.FieldType == typeof(Vector3))
+                                if (_implementations.ContainsKey(field.FieldType))
                                 {
-                                    var value = (Vector3)field.GetValue(component);
-                                    Vector3 start = trans.position;
-                                    Vector3 end = trans.position + value;
-                                    if (attr.displayLength)
-                                    {
-                                        var midWay = Vector3.Lerp(start, end, 0.5f);
-                                        Utility.GizmoUtility.Label(midWay + new Vector3(0, 0.5f, 0), value.magnitude.ToString("F1"));
-                                    }
-                                    Utility.GizmoUtility.Arrow(trans.position, value.normalized, value.magnitude, width, color:color);
-                                }
-                                else if (field.FieldType == typeof(float))
-                                {
-                                    var value = (float)field.GetValue(component);
-                                    Vector3 start = trans.position;
-                                    if (attr.displayLength)
-                                    {
-                                        Utility.GizmoUtility.Label(start + new Vector3(0, 0.5f, 0), value.ToString("F1"));
-                                    }
-                                    Utility.GizmoUtility.Sphere(trans.position, value, color:color);
+                                    _implementations[field.FieldType].Handle(field, go, component, attr);
                                 }
                             }
                         }

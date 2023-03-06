@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using BBG.GizmoUtility.Common;
 using UnityEditor;
 using UnityEditor.Callbacks;
@@ -11,11 +13,12 @@ namespace GizmoUtility.Editor
         [DidReloadScripts]
         static void Init()
         {
+            Debug.Log("Handle Utility init");
             SceneView.duringSceneGui -= OnSceneView;
             SceneView.duringSceneGui += OnSceneView;
         }
 
-        static void OnSceneView(SceneView view)
+        public static void OnSceneView(SceneView view)
         {
             if (Event.current.type != EventType.Repaint)
             {
@@ -33,14 +36,51 @@ namespace GizmoUtility.Editor
                     var typeInfo = behaviour.GetType().GetTypeInfo();
                     var asm = behaviour.GetType().Assembly;
 
+
+                    Vector3 offset = new Vector3(0, 2f, 0f);
+                    float buttonSize = 1f;
+                    var color = Handles.color;
+                    foreach (MethodInfo method in typeInfo.GetMethods())
+                    {
+                        Handles.color = new Color(0.8f, 0.6f, 0, 0.5f);
+                        var button = method.GetCustomAttribute<ButtonHandle>();
+                        if (button != null)
+                        {
+                            var style = new GUIStyle(GUI.skin.button);
+
+                            Quaternion oldrot = go.transform.rotation;
+                            go.transform.LookAt(SceneView.currentDrawingSceneView.position.position);
+                            Handles.Label(go.transform.position + offset, method.Name+"()", style:style);
+                            Handles.color = Color.clear;
+                            if (Handles.Button(go.transform.position + offset, go.transform.rotation, buttonSize, buttonSize,
+                                    Handles.SphereHandleCap))
+                            {
+                                method.Invoke(behaviour, default);
+                                Debug.Log("Clicked");
+                            }
+
+                            go.transform.rotation = oldrot;
+                        }
+                    }
+
+                    Handles.color = color;
+
                     foreach (FieldInfo field in typeInfo.GetFields())
                     {
+
                         var gizmo = field.GetCustomAttribute<HandleGizmoAttribute>();
                         if (gizmo == null)
                         {
                             continue;
                         }
-                    
+
+                        Dictionary<Type, Action> d = new Dictionary<Type, Action>()
+                        {
+                            { typeof(float), () => { } },
+                        };
+                        
+                        
+                        var f = new[] { typeof(float) };
 
                         if (field.FieldType == typeof(float))
                         {
@@ -67,7 +107,7 @@ namespace GizmoUtility.Editor
                                 example.Update();
                             }*/
                             //Vector3 newTargetPosition = Handles.FreeMoveHandle(example.targetPosition, Quaternion.identity, size, snap, Handles.RectangleHandleCap);
-                            Vector3 updatedValue = Handles.FreeMoveHandle(targetPosition, Quaternion.identity, size,
+                            Vector3 updatedValue = Handles.FreeMoveHandle(targetPosition, size,
                                 snap, Handles.SphereHandleCap);
                             
                             field.SetValue(behaviour, updatedValue - go.transform.position);

@@ -14,10 +14,12 @@ namespace Utility
     /// <summary>
     /// Utilities for drawing gizmo-likes in a static manner
     /// </summary>
+    [ExecuteAlways]
     public class GizmoUtility : MonoBehaviour
     {
         private float previousUpdateTime = -1f;
 
+#if UNITY_EDITOR
         private void OnEnable()
         {
             SceneView.duringSceneGui += this._OnSceneView;
@@ -27,6 +29,7 @@ namespace Utility
         {
             SceneView.duringSceneGui -= this._OnSceneView;
         }
+#endif
 
         private class Job
         {
@@ -64,6 +67,7 @@ namespace Utility
         private enum JobType
         {
             Line,
+            Lines,
             Label,
             Circle,
             Sphere,
@@ -164,6 +168,26 @@ namespace Utility
                 animatedColor: animatedColor, endColor: endcolor, duration: duration, mustBeSelected: mustBeSelected);
         }
 
+        public static void Lines(Vector3[] positions, float width = 3.5f, Color? color = null,
+            float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
+        {
+            Job job = new Job();
+
+            job.arguments = new object[] { positions, width };
+            job.duration = duration;
+            job.durationLeft = duration;
+            job.typeOfJob = JobType.Lines;
+            job.EndColor = endColor;
+            job.AnimatedColor = animatedColor;
+
+            job.MustBeSelected = mustBeSelected;
+
+            // Use white if no color defined
+            job.color = color.HasValue ? color.Value : Color.white;
+
+            AddJob(job);
+        }
+
         public static void Line(Vector3 startPosition, Vector3 endPosition, float width = 3.5f, Color? color = null,
             float duration = -1, GameObject mustBeSelected = null, bool animatedColor = false, Color endColor = default)
         {
@@ -211,6 +235,7 @@ namespace Utility
             return new JobType[] { JobType.Sphere }.Contains(job.typeOfJob);
         }
         
+        #if UNITY_EDITOR
         public void _OnSceneView(SceneView view)
         {
             if (Event.current.type != EventType.Repaint)
@@ -245,6 +270,7 @@ namespace Utility
 
             Handles.color = initialColor;
         }
+        #endif
 
 
         void OnDrawGizmos()
@@ -290,10 +316,15 @@ namespace Utility
                         Handles.Label(position, text, style);
 
                         break;
+                    case JobType.Lines:
+                        Vector3[] positions = (Vector3[])job.arguments[0];
+                        float width = (float)job.arguments[1];
+                        Handles.DrawAAPolyLine(width, positions);
+                        break;
                     case JobType.Line:
                         Vector3 start = (Vector3)job.arguments[0];
                         Vector3 end = (Vector3)job.arguments[1];
-                        float width = (float)job.arguments[2];
+                        width = (float)job.arguments[2];
 
                         Handles.DrawAAPolyLine(width, new Vector3[] { start, end });
 
@@ -307,13 +338,13 @@ namespace Utility
                         break;
                 }
             }
-
             Handles.color = initialColor;
 #endif
         }
 
         private static bool CheckJobIfSelected(Job job)
         {
+            #if UNITY_EDITOR
             // If the job is supposed to only be done while the gameobject is rendered, check for selection here.
             if (job.MustBeSelected != null)
             {
@@ -322,6 +353,7 @@ namespace Utility
                     return true;
                 }
             }
+            #endif
 
             return false;
         }

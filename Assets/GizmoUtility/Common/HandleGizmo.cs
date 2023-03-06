@@ -10,4 +10,10 @@ namespace BBG.GizmoUtility.Common
     {
     
     }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class ButtonHandle : Attribute
+    {
+        
+    }
 }
