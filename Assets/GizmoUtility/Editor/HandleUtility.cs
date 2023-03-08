@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BBG.GizmoUtility.Common;
+using GizmoUtility.Editor.Settings;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
@@ -13,16 +14,19 @@ namespace GizmoUtility.Editor
         [DidReloadScripts]
         static void Init()
         {
-            Debug.Log("Handle Utility init");
             SceneView.duringSceneGui -= OnSceneView;
             SceneView.duringSceneGui += OnSceneView;
         }
 
         public static void OnSceneView(SceneView view)
         {
+            if (!GizmoSettings.enabled)
+            {
+                return;
+            }
             if (Event.current.type != EventType.Repaint)
             {
-                //return;
+                return;
             }
             foreach (var go in Selection.gameObjects)
             {
@@ -34,8 +38,6 @@ namespace GizmoUtility.Editor
                     }
                     
                     var typeInfo = behaviour.GetType().GetTypeInfo();
-                    var asm = behaviour.GetType().Assembly;
-
 
                     Vector3 offset = new Vector3(0, 2f, 0f);
                     float buttonSize = 1f;
@@ -67,21 +69,12 @@ namespace GizmoUtility.Editor
 
                     foreach (FieldInfo field in typeInfo.GetFields())
                     {
-
                         var gizmo = field.GetCustomAttribute<HandleGizmoAttribute>();
                         if (gizmo == null)
                         {
                             continue;
                         }
-
-                        Dictionary<Type, Action> d = new Dictionary<Type, Action>()
-                        {
-                            { typeof(float), () => { } },
-                        };
-                        
-                        
-                        var f = new[] { typeof(float) };
-
+                       
                         if (field.FieldType == typeof(float))
                         {
                             float value = (float)field.GetValue(behaviour);

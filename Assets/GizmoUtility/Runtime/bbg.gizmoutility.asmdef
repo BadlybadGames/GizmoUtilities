@@ -2,12 +2,13 @@
     "name": "BBG.GizmoUtility",
     "rootNamespace": "BBG.GizmoUtility",
     "references": [
-        "GUID:71f4243a81a50cc4b9495c6192eaa85c"
+        "GUID:71f4243a81a50cc4b9495c6192eaa85c",
+        "GUID:49818357e697641afb75d2f8acaf1861"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

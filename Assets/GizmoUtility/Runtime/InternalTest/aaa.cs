@@ -1,12 +1,8 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using BBG.GizmoUtility.Common;
-using BBG.Physics.Internal;
+using BBG.GizmoUtility.GizmoUtility.Runtime;
 using UnityEngine;
-using Utility;
 
-[Gizmo(r=0.2f, g=1f, b=0.2f, a=0.3f, mustBeSelected = true)]
+[Gizmo(r=0.2f, g=1f, b=0.2f, a=0.3f)]
 public class aaa : MonoBehaviour
 {
 
@@ -23,6 +19,12 @@ public class aaa : MonoBehaviour
     [HandleGizmo]
     public Vector3 vec;
     // Update is called once per frame
+
+    [ButtonHandle]
+    public void Test()
+    {
+        
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))

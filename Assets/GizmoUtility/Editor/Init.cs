@@ -1,4 +1,5 @@
-﻿using BBG.Physics.Internal;
+﻿using BBG.GizmoUtility.GizmoUtility.Runtime;
+using GizmoUtility.Editor.Settings;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,17 +10,14 @@ namespace Utility
     {
         static Init()
         {
-            InitGizmoUtility();
+            if (GizmoSettings.autoInitialize)
+            {
+                InitGizmoUtility();
+            }
         }
 
-        public static void InitGizmoUtility()
+        static void InitGizmoUtility()
         {
-            if (!Settings.instance.AutoInitialize)
-            {
-                return;
-            }
-            
-
             SceneView.duringSceneGui -= OnSceneView;
             SceneView.duringSceneGui += OnSceneView;
 

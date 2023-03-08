@@ -3,14 +3,15 @@
     "rootNamespace": "BBG.GizmoUtility.Editor",
     "references": [
         "GUID:71f4243a81a50cc4b9495c6192eaa85c",
-        "GUID:df2d23422b1bc0e40aadf4dae1b70efa"
+        "GUID:df2d23422b1bc0e40aadf4dae1b70efa",
+        "GUID:49818357e697641afb75d2f8acaf1861"
     ],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

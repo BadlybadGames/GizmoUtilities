@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GizmoUtility.Editor.Settings;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -210,6 +211,10 @@ namespace Utility
 
         private static void AddJob(Job job)
         {
+            if (!GizmoSettings.enabled)
+            {
+                return;
+            }
             jobs.Add(job);
         }
 

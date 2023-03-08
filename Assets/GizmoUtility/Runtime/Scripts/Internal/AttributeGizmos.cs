@@ -1,29 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BBG.GizmoUtility.GizmoUtility.Runtime.Scripts.FieldImplementations;
+using BBG.GizmoUtility.GizmoUtility.Runtime.FieldImplementations;
+using GizmoUtility.Editor.Settings;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utility;
 
-namespace BBG.Physics.Internal
+namespace BBG.GizmoUtility.GizmoUtility.Runtime
 {
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Parameter)]
     public class GizmoAttribute : Attribute
     {
         public float size = -1;
-        public bool mustBeSelected = false, displayLength = true;
+        public bool displayLength = true;
         public float r=1, g=1, b=1, a=1;
+
+        public Color GetColor => new Color(r, g, b, a);
+
+        /// <summary>
+        /// True if r/g/b/a has been changed by user
+        /// </summary>
+        public bool DefinedCustomColor =>
+            Mathf.Approximately(r, 1) &&
+            Mathf.Approximately(g, 1) &&
+            Mathf.Approximately(b, 1) &&
+            Mathf.Approximately(a, 1);
+    }
+
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Parameter)]
+    public class MustBeSelected : Attribute
+    {
+        public bool mustBeSelected = true;
     }
     
     [ExecuteAlways]
     public class AttributeGizmos : MonoBehaviour
     {
 
-        private Dictionary<Type, BaseFieldImplementation> _implementations =
-            new Dictionary<Type, BaseFieldImplementation>()
+        private readonly Dictionary<Type, BaseFieldImplementation> _implementations = new()
             {
                 { typeof(float), new FloatFieldImplementation() },
                 { typeof(Vector3), new Vector3FieldImplementation() },
@@ -34,6 +51,10 @@ namespace BBG.Physics.Internal
         
         private void Update()
         {
+            if (!GizmoSettings.enabled)
+            {
+                return;
+            }
             for (int i = 0; i < SceneManager.sceneCount; i++)
             {
                 var scene = SceneManager.GetSceneAt(i);
@@ -60,9 +81,10 @@ namespace BBG.Physics.Internal
                             var attr = field.GetCustomAttribute<GizmoAttribute>() ?? componentAttr;
                             if (attr != null)
                             {
-                                Color color = new Color(attr.r, attr.g, attr.b, attr.a);
+                                var selectedAttribute = field.GetCustomAttribute<MustBeSelected>();
+                                bool mustBeSelected = selectedAttribute?.mustBeSelected ?? GizmoSettings.onlyWhileSelected;
                                 float width = attr.size < 0 ? 4.5f : attr.size;
-                                if (attr.mustBeSelected)
+                                if (mustBeSelected)
                                 {
                                     #if UNITY_EDITOR
                                     if (!Selection.Contains(go))

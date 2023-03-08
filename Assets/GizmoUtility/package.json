@@ -9,7 +9,7 @@
   "changelogUrl": "https://example.com/changelog.html",
   "licensesUrl": "https://example.com/licensing.html",
   "dependencies": {
- 
+    "com.unity.settings-manager": "2.0.0"
  },
  "keywords": [
     "keyword1",
