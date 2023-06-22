@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GizmoUtility.Editor.Settings;
-using UnityEngine;
-#if UNITY_EDITOR
+using GizmoUtilities.Editor.Settings;
 using UnityEditor;
-#endif
+using UnityEngine;
 
-namespace Utility
+namespace BBG.GizmoUtilities
 {
     // Should only have a single instance!!
     /// <summary>
     /// Utilities for drawing gizmo-likes in a static manner
     /// </summary>
+    #if UNITY_EDITOR
     [ExecuteAlways]
+    #endif
+    
     public class GizmoUtility : MonoBehaviour
     {
         private float previousUpdateTime = -1f;

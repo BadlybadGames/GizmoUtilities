@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
-namespace BBG.GizmoUtility.Common
+namespace BBG.GizmoUtilities.Common
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Parameter)]
     public class HandleGizmoAttribute : Attribute

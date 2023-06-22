@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BBG.GizmoUtility.Common;
-using GizmoUtility.Editor.Settings;
+using BBG.GizmoUtilities.Common;
+using GizmoUtilities.Editor.Settings;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;
 
-namespace GizmoUtility.Editor
+namespace GizmoUtilities.Editor
 {
     public static class HandleUtility
     {

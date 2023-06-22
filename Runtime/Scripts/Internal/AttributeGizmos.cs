@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using BBG.GizmoUtility.GizmoUtility.Runtime.FieldImplementations;
-using GizmoUtility.Editor.Settings;
+using BBG.GizmoUtilities.Runtime;
+using GizmoUtilities.Editor.Settings;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utility;
 
-namespace BBG.GizmoUtility.GizmoUtility.Runtime
+namespace BBG.GizmoUtilities.Runtime
 {
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Field | AttributeTargets.Parameter)]

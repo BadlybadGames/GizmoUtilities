@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEditor.SettingsManagement;
 
-namespace GizmoUtility.Editor.Settings
+namespace GizmoUtilities.Editor.Settings
 {
     internal static class SettingsGroup
     {

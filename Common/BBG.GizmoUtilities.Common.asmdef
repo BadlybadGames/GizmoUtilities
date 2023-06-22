@@ -1,9 +1,7 @@
 {
-    "name": "BBG.GizmoUtility.Editor",
-    "rootNamespace": "BBG.GizmoUtility.Editor",
+    "name": "BBG.GizmoUtilities.Common",
+    "rootNamespace": "BBG.GizmoUtilities.Common",
     "references": [
-        "GUID:71f4243a81a50cc4b9495c6192eaa85c",
-        "GUID:df2d23422b1bc0e40aadf4dae1b70efa",
         "GUID:49818357e697641afb75d2f8acaf1861"
     ],
     "includePlatforms": [
@@ -11,7 +9,7 @@
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
+    "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],

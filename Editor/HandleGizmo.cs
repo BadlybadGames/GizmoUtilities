@@ -1,5 +1,5 @@
 ﻿using System;
 
-namespace GizmoUtility.Editor
+namespace GizmoUtilities.Editor
 {
 }

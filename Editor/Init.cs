@@ -1,5 +1,4 @@
-﻿using BBG.GizmoUtility.GizmoUtility.Runtime;
-using GizmoUtility.Editor.Settings;
+﻿using GizmoUtilities.Editor.Settings;
 using UnityEditor;
 using UnityEngine;
 
@@ -21,7 +20,8 @@ namespace Utility
             SceneView.duringSceneGui -= OnSceneView;
             SceneView.duringSceneGui += OnSceneView;
 
-            if (GameObject.FindObjectOfType<GizmoUtility>())
+#if FALSE
+            if (GameObject.FindObjectOfType<BBG.GizmoUtility>())
             {
                 Debug.LogError("Already initialized gizmos");
                 return;
@@ -35,6 +35,7 @@ namespace Utility
             //GameObject.DontDestroyOnLoad(go);
             var gu = go.AddComponent<GizmoUtility>();
             go.AddComponent<AttributeGizmos>();
+#endif
         }
 
         private static void OnSceneView(SceneView obj)
