@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using BBG.GizmoUtilities.Common;
-using GizmoUtilities.Editor.Settings;
+using BBG.GizmoUtilities.Common.Settings;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEngine;

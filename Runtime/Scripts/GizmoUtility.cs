@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GizmoUtilities.Editor.Settings;
+#if UNITY_EDITOR
+using BBG.GizmoUtilities.Common.Settings;
+#endif
 using UnityEditor;
 using UnityEngine;
 
@@ -210,10 +212,12 @@ namespace BBG.GizmoUtilities
 
         private static void AddJob(Job job)
         {
+            #if UNITY_EDITOR
             if (!GizmoSettings.enabled)
             {
                 return;
             }
+            #endif
             jobs.Add(job);
         }
 

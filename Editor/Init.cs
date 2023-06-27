@@ -1,4 +1,4 @@
-﻿using GizmoUtilities.Editor.Settings;
+﻿using BBG.GizmoUtilities.Common.Settings;
 using UnityEditor;
 using UnityEngine;
 
